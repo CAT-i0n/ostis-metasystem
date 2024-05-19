@@ -12,17 +12,17 @@
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 #include "keynodes/TranslationKeynodes.hpp"
 
-#include "agent/StructureSubdividingAgent.hpp"
+#include "agent/StructureToTextTranslationAgent.hpp"
 
 using namespace translationModule;
 
-namespace testStructureSubdividing
+namespace testSubstructuresToTextTranslation
 {
 ScsLoader loader;
-std::string const TEST_FILES_DIR_PATH = TEST_SRC_PATH "/testStructures/structureSubdividing/";
-int const WAIT_TIME = 5000;
+const std::string TEST_FILES_DIR_PATH = TEST_SRC_PATH "/testStructures/substructuresToTextTranslation/";
+const int WAIT_TIME = 5000;
 
-using StructureSubdividingTest = ScMemoryTest;
+using SubstructureToTextTranslationTest = ScMemoryTest;
 
 void initializeClasses()
 {
@@ -30,12 +30,12 @@ void initializeClasses()
   translationModule::TranslationKeynodes::InitGlobal();
 
   ScAgentInit(true);
-  SC_AGENT_REGISTER(translationModule::StructureSubdividingAgent)
+  SC_AGENT_REGISTER(translationModule::StructureToTextTranslationAgent)
 }
 
 void deinitializeClasses()
 {
-  SC_AGENT_UNREGISTER(translationModule::StructureSubdividingAgent)
+  SC_AGENT_UNREGISTER(translationModule::StructureToTextTranslationAgent)
 }
 
 void loadFilesFromDir(ScMemoryContext & context, std::string const & path)
@@ -49,7 +49,7 @@ void loadFilesFromDir(ScMemoryContext & context, std::string const & path)
   }
 }
 
-TEST_F(StructureSubdividingTest, ActionDoesntHaveParameters)
+TEST_F(SubstructureToTextTranslationTest, ActionDoesntHaveParameters)
 {
   ScMemoryContext & ctx = *m_ctx;
 
@@ -69,4 +69,25 @@ TEST_F(StructureSubdividingTest, ActionDoesntHaveParameters)
   deinitializeClasses();
 }
 
-}  // namespace testStructureSubdividing
+TEST_F(SubstructureToTextTranslationTest, Test1)
+{
+  ScMemoryContext & ctx = *m_ctx;
+
+  loader.loadScsFile(ctx, TEST_FILES_DIR_PATH + "test1.scs");
+  ScAddr const & test_action_node = ctx.HelperFindBySystemIdtf("test_question_node");
+  EXPECT_TRUE(ctx.IsElement(test_action_node));
+
+  initializeClasses();
+
+  EXPECT_TRUE(utils::AgentUtils::applyAction(&ctx, test_action_node, WAIT_TIME));
+
+  EXPECT_TRUE(ctx.HelperCheckEdge(
+      scAgentsCommon::CoreKeynodes::question_finished_unsuccessfully,
+      test_action_node,
+      ScType::EdgeAccessConstPosPerm));
+
+  deinitializeClasses();
+}
+
+
+}  // namespace testSubstructuresToTextTranslation

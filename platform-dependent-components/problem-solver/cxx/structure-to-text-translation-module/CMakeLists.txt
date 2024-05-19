@@ -1,32 +1,14 @@
-set(SOURCES
-		"TranslationModule.cpp"
-		"agent/SubstructuresToTextTranslationAgent.cpp"
-		"agent/StructureSubdividingAgent.cpp"
-		"eraser/TranslationEraser.cpp"
-		"constants/TranslationConstants.cpp"
-		"generator/TranslationGenerator.cpp"
-		"handler/TranslationHandler.cpp"
-		"keynodes/TranslationKeynodes.cpp"
-		"manager/SubstructuresToTextTranslationManager.cpp"
-		"manager/StructureSubdividingManager.cpp"
-		"searcher/TranslationSearcher.cpp"
-		"templates/TranslationTemplates.cpp"
-		)
+set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(HEADERS
-		"TranslationModule.hpp"
-		"agent/SubstructuresToTextTranslationAgent.hpp"
-		"agent/StructureSubdividingAgent.hpp"
-		"eraser/TranslationEraser.hpp"
-		"constants/TranslationConstants.hpp"
-		"generator/TranslationGenerator.hpp"
-		"handler/TranslationHandler.hpp"
-		"keynodes/TranslationKeynodes.hpp"
-		"manager/SubstructuresToTextTranslationManager.hpp"
-		"manager/StructureSubdividingManager.hpp"
-		"searcher/TranslationSearcher.hpp"
-		"templates/TranslationTemplates.hpp"
-		)
+file(GLOB_RECURSE ALL_SOURCES ${ROOT_DIR}/*.cpp)
+file(GLOB_RECURSE ALL_HEADERS ${ROOT_DIR}/*.hpp)
+# Exclude files in the 'test' folder
+file(GLOB_RECURSE TEST_FILES ${ROOT_DIR}/test/*)
+list(REMOVE_ITEM ALL_SOURCES ${TEST_FILES})
+list(REMOVE_ITEM ALL_HEADERS ${TEST_FILES})
+# Set the SOURCE variable
+set(SOURCES ${ALL_SOURCES})
+set(HEADERS ${ALL_HEADERS})
 
 include_directories(
 		${CMAKE_CURRENT_LIST_DIR}
@@ -37,6 +19,7 @@ include_directories(
     	${COMMON_MODULE_PATH})
 
 add_library(translationModule SHARED ${SOURCES} ${HEADERS})
+
 target_link_libraries(translationModule sc-memory sc-agents-common local-common)
 
 sc_codegen_ex(translationModule ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/generated)

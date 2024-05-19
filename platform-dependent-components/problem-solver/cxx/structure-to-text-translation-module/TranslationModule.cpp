@@ -1,8 +1,6 @@
 #include "keynodes/TranslationKeynodes.hpp"
 
-#include "agent/SubstructuresToTextTranslationAgent.hpp"
-#include "agent/StructureSubdividingAgent.hpp"
-
+#include "agent/StructureToTextTranslationAgent.hpp"
 #include "TranslationModule.hpp"
 
 namespace translationModule
@@ -24,8 +22,7 @@ sc_result TranslationModule::InitializeImpl()
   }
   else
   {
-    SC_AGENT_REGISTER(SubstructuresToTextTranslationAgent)
-    SC_AGENT_REGISTER(StructureSubdividingAgent)
+    SC_AGENT_REGISTER(StructureToTextTranslationAgent)
   }
 
   return SC_RESULT_OK;
@@ -34,8 +31,7 @@ sc_result TranslationModule::InitializeImpl()
 
 sc_result TranslationModule::ShutdownImpl()
 {
-  SC_AGENT_UNREGISTER(SubstructuresToTextTranslationAgent)
-  SC_AGENT_UNREGISTER(StructureSubdividingAgent)
+  SC_AGENT_UNREGISTER(StructureToTextTranslationAgent)
   return SC_RESULT_OK;
 }
 

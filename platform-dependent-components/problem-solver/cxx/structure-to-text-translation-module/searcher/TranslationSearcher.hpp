@@ -13,6 +13,10 @@ class TranslationSearcher
 public:
   explicit TranslationSearcher(ScMemoryContext * context);
 
+  ScAddrSet getStructureEdges(ScAddr const & structure) const;
+
+  ScAddrSet getStructureNodes(ScAddr const & structure) const;
+
 private:
   ScMemoryContext * context;
 };

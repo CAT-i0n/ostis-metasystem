@@ -1,0 +1,32 @@
+test_question_node
+<- question;
+<- action_translate_structures;
+-> rrel_1: 
+[* 
+  abc => nrel_side: ab;;
+  concept_triangle -> abc;;
+  concept_segment -> ab;;
+*];
+-> rrel_2: ..key_elements;;
+
+@edge1 = (..key_elements -> rrel_1: abc);;
+
+@edge2 = (..key_elements -> rrel_last: ab);;
+
+@edge1 => nrel_basic_sequence: @edge2;;
+
+
+abc => nrel_main_idtf: [abc] (* <- lang_en;; *);;
+
+ab => nrel_main_idtf: [ab] (* <- lang_en;; *);;
+
+concept_triangle => nrel_main_idtf: [triangle] (* <- lang_en;; *);;
+concept_segment => nrel_main_idtf: [segment] (* <- lang_en;; *);;
+nrel_side => nrel_main_idtf: [have side] (* <- lang_en;; *);;
+
+sc_node_class
+-> concept_triangle;
+-> concept_segment;;
+
+sc_node_norole_relation
+-> nrel_side;;

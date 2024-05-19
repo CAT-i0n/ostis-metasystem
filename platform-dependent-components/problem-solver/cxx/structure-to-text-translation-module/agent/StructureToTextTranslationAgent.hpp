@@ -4,19 +4,19 @@
 
 #include "sc-agents-common/keynodes/coreKeynodes.hpp"
 
-#include "manager/SubstructuresToTextTranslationManager.hpp"
+#include "manager/StructureToTextTranslationManager.hpp"
 
-#include "SubstructuresToTextTranslationAgent.generated.hpp"
+#include "StructureToTextTranslationAgent.generated.hpp"
 
 namespace translationModule
 {
-class SubstructuresToTextTranslationAgent : public ScAgent
+class StructureToTextTranslationAgent : public ScAgent
 {
   SC_CLASS(Agent, Event(scAgentsCommon::CoreKeynodes::question_initiated, ScEvent::Type::AddOutputEdge))
   SC_GENERATED_BODY()
 
 private:
-  std::unique_ptr<SubstructuresToTextTranslationManager> substructuresToTextTranslationManager;
+  std::unique_ptr<StructureToTextTranslationManager> structureToTextTranslationManager;
 
   bool checkActionClass(ScAddr const & actionAddr);
 
