@@ -34,54 +34,51 @@ class CleanTextGenerationAgent(ScAgentClassic):
         )
         return result           
 
-    def run(self, action_element: ScAddr) -> ScResult:              
-        self.logger.info('Non-official API raw text processor began to run...')
-
+    def run(self, action_element: ScAddr) -> ScResult:
+        self.logger.info('CleanTextGenerationAgent started')      
         # Get sc-link with raw text        
         raw_text_node = get_action_arguments(action_element, 1)[0]
         if not raw_text_node:
-            self.logger.error('Error: could not find raw text sc-link to process')
+            self.logger.error('CleanTextGenerationAgent: could not find raw text sc-link to process')
             return ScResult.ERROR_INVALID_PARAMS
         
         #Get language of raw text sc-link
         language_template = ScTemplate()
         language_template.triple(
-            sc_types.NODE_CLASS,
+            sc_types.NODE_CLASS >> "language",
             sc_types.EDGE_ACCESS_VAR_POS_PERM,
             raw_text_node
         )
         search_result = template_search(language_template)
-        if len(search_result) != 1:
-            self.logger.error('Error: You have passed no language or too many arguments.')
+        if not len(search_result):
+            self.logger.error('CleanTextGenerationAgent: language link not found.')
             return ScResult.ERROR_INVALID_PARAMS
-        language_node = search_result[0][0]
+        language_node = search_result[0][language]
         language = get_system_idtf(language_node)
         if not language in constants.AVAILABLE_LANGUAGES:
-            self.logger.error(f'Error: you have not passed available language as argument. You passed: {language}')
+            self.logger.error(f'CleanTextGenerationAgent: unknown language')
             return ScResult.ERROR_INVALID_PARAMS
         
         # Get raw text string
         raw_text = get_link_content_data(raw_text_node)        
         if not isinstance(raw_text, str):
-            self.logger.error(f'Error: your raw text link must be string type, but text of yours is {type(raw_text)}')
+            self.logger.error(f'CleanTextGenerationAgent: invalid link content')
             return ScResult.ERROR_INVALID_TYPE
+        
 
-        # Trying to get clean text        
-        try:
-            clean_text = self._get_clean_text(raw_text, language)            
-        except HTTPError as err:
-            self.logger.error(f'Error: {err}.\nThis error is on non-official API\'s side.')
-            return ScResult.ERROR
+        if not raw_text:
+            self.logger.error(f'CleanTextGenerationAgent: input link is empty')
+            return ScResult.ERROR_INVALID_PARAMS
+
+        clean_text = self._get_clean_text(raw_text, language)            
         
         # Check text for emptiness. If processed text is empty, that means that model does not work
         if clean_text is None or clean_text == '':
-            self.logger.error(f'Error: Looks like that model {constants.NON_OFFICIAL_API_DEFAULT_MODEL} does not work. Try to change one in configs.')
+            self.logger.error(f'CleanTextGenerationAgent: error with text processing')
             return ScResult.ERROR
 
-        # Creating answer and finishing agent work
         answer_link = create_link(clean_text, ScLinkContentType.STRING)        
         create_action_answer(action_element, answer_link)
-        self.logger.info('Successfully processed the text using non-official API! Wery well!')
         finish_action_with_status(action_element, True)
         return ScResult.OK
     
