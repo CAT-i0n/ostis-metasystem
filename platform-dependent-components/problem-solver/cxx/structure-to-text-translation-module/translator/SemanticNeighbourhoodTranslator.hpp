@@ -25,8 +25,6 @@ public:
       ScAddr const & structure, 
       ScAddr const & lang) const = 0;
 
-  virtual std::list<ScAddrVector> getSemanticNeighbourhoodTranslationElements(ScAddr const & node, ScAddr const & structure)
-      const = 0;
 
   size_t hashCode() const;
 
@@ -35,20 +33,16 @@ public:
 protected:
   ScMemoryContext * context;
 
-  std::string getEnglishContent(ScAddr const & linkNode) const;
-
-  std::string getEnglishMainIdtf(ScAddr const & node) const;
-
   bool isInIgnoredKeynodes(ScAddr const & node) const;
 
   static bool isInStructure(ScAddr const & elementAddr, ScAddr const & structure);
 
   static bool anyIsInStructure(ScAddrVector const & elements, ScAddr const & structure);
 
+  std::string getMainIdtf(ScAddr const & node, ScAddr const & lang) const;
+
 private:
   ScIterator5Ptr getNrelMainIdtfIterator(ScAddr const & node) const;
-
-  bool isEnglish(ScAddr const & node) const;
 };
 
 struct SemanticNeighbourhoodTranslatorCmp

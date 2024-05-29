@@ -18,9 +18,6 @@ public:
       ScAddr const & structure, 
       ScAddr const & lang) const override;
 
-  std::list<ScAddrVector> getSemanticNeighbourhoodTranslationElements(ScAddr const & node, ScAddr const & structure)
-      const override;
-
 protected:
 private:
 };

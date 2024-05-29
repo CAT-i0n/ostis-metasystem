@@ -1,23 +1,22 @@
-#include "NrelInNodeSemanticNeighbourhoodTranslator.hpp"
-#include "sc-agents-common/utils/CommonUtils.hpp"
+#include "NrelInLinkSemanticNeighbourhoodTranslator.hpp"
 
 namespace translationModule
 {
-NrelInNodeSemanticNeighbourhoodTranslator::NrelInNodeSemanticNeighbourhoodTranslator(ScMemoryContext * context)
+NrelInLinkSemanticNeighbourhoodTranslator::NrelInLinkSemanticNeighbourhoodTranslator(ScMemoryContext * context)
   : SemanticNeighbourhoodTranslator(context)
 {
 }
 
-std::vector<std::string> NrelInNodeSemanticNeighbourhoodTranslator::getSemanticNeighbourhoodTranslation(
-    ScAddrQueue & structureSearchQueue,
-    ScAddrSet & notVisitedStructureEdges,
-    ScAddr const & structure,
-    ScAddr const & lang) const
+std::vector<std::string> NrelInLinkSemanticNeighbourhoodTranslator::getSemanticNeighbourhoodTranslation(
+      ScAddrQueue & structureSearchQueue,
+      ScAddrSet & notVisitedStructureEdges,
+      ScAddr const & structure, 
+      ScAddr const & lang) const
 {
   ScAddr const & node = structureSearchQueue.front();
   std::vector<std::string> translations;
   auto const & nrelIterator = context->Iterator5(
-      node, ScType::EdgeDCommonConst, ScType::NodeConst, ScType::EdgeAccessConstPosPerm, ScType::NodeConstNoRole);
+      node, ScType::EdgeDCommonConst, ScType::LinkConst, ScType::EdgeAccessConstPosPerm, ScType::NodeConstNoRole);
   std::string const & nodeMainIdtf = getMainIdtf(node, {lang});
   if (nodeMainIdtf.empty())
       return {};
@@ -26,10 +25,9 @@ std::vector<std::string> NrelInNodeSemanticNeighbourhoodTranslator::getSemanticN
     if (!notVisitedStructureEdges.count(nrelIterator->Get(1)) || !notVisitedStructureEdges.count(nrelIterator->Get(3)))
       continue;
 
-    ScAddr const & nrelTargetNode = nrelIterator->Get(2);
-    if (isInIgnoredKeynodes(nrelTargetNode))
-      continue;
-    std::string const & nrelTargetMainIdtf = getMainIdtf(nrelTargetNode, {lang});
+    ScAddr const & nrelTargetLink = nrelIterator->Get(2);
+    std::string nrelTargetMainIdtf;
+    context->GetLinkContent(nrelTargetLink, nrelTargetMainIdtf);
     if (nrelTargetMainIdtf.empty())
       continue;
 
@@ -44,9 +42,9 @@ std::vector<std::string> NrelInNodeSemanticNeighbourhoodTranslator::getSemanticN
 
     notVisitedStructureEdges.erase(nrelIterator->Get(1));
     notVisitedStructureEdges.erase(nrelIterator->Get(3));
-    structureSearchQueue.push(nrelIterator->Get(2));
   }
   return translations;
 }
+
 
 }  // namespace translationModule

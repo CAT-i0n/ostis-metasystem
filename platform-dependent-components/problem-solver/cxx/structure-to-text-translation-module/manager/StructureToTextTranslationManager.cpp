@@ -25,28 +25,36 @@ StructureToTextTranslationManager::StructureToTextTranslationManager(ScMemoryCon
 ScAddrVector StructureToTextTranslationManager::manage(ScAddrVector const & processParameters) const
 {
   ScAddr const & structure = processParameters[0];
-  ScAddrVector const & keyElements = OrientedSetUtils::getElementsFromOrientedSet(context, processParameters[1]);
+  ScAddrVector keyElements = OrientedSetUtils::getElementsFromOrientedSet(context, processParameters[1]);
   for (auto const key : keyElements)
     SC_LOG_DEBUG("key " << context->HelperGetSystemIdtf(key));
-
   if (keyElements.empty())
-    // find main element and add to key
+    // findKeyElemet(keyElements);
     return {};
-
-  ScAddr const & lang = TranslationKeynodes::lang_en;
-
+  ScAddr const & lang = TranslationKeynodes::lang_ru;
   std::vector<std::string> translations = structureTranslator->TranslateStructure(structure, keyElements, lang);
 
   std::string const & translation = join(translations.cbegin(), translations.cend());
-
   SC_LOG_DEBUG(translation);
-  // result = translator->translateStructe(structure, keyElements, notVisitedStructureEdges, notVisitedStructureNodes)
-
-  return {};
+  ScAddr const & result =
+      createLink(translation, {lang});
+  return {result};
 }
 
-std::string StructureToTextTranslationManager::join(
-    std::vector<std::string>::const_iterator const & cbegin,
+ScAddr StructureToTextTranslationManager::createLink(std::string const & text, ScAddrVector const & linkClasses) const
+{
+  ScAddr addr = context->CreateLink();
+  context->SetLinkContent(addr, text);
+  for (auto const & linkClass : linkClasses)
+  {
+    if (context->IsElement(linkClass))
+      context->CreateEdge(ScType::EdgeAccessConstPosPerm, linkClass, addr);
+  }
+
+  return addr;
+}
+
+std::string StructureToTextTranslationManager::join(    std::vector<std::string>::const_iterator const & cbegin,
     std::vector<std::string>::const_iterator const & cend) const
 {
   std::ostringstream os;

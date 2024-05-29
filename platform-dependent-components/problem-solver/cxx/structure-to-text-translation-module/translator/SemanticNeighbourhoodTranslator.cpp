@@ -17,14 +17,6 @@ bool SemanticNeighbourhoodTranslator::operator<(SemanticNeighbourhoodTranslator 
   return this->hashCode() < other.hashCode();
 }
 
-std::string SemanticNeighbourhoodTranslator::getEnglishContent(ScAddr const & linkNode) const
-{
-  std::string content;
-  if (isEnglish(linkNode))
-    context->GetLinkContent(linkNode, content);
-  return content;
-}
-
 ScIterator5Ptr SemanticNeighbourhoodTranslator::getNrelMainIdtfIterator(ScAddr const & node) const
 {
   return context->Iterator5(
@@ -35,22 +27,9 @@ ScIterator5Ptr SemanticNeighbourhoodTranslator::getNrelMainIdtfIterator(ScAddr c
       scAgentsCommon::CoreKeynodes::nrel_main_idtf);
 }
 
-bool SemanticNeighbourhoodTranslator::isEnglish(ScAddr const & node) const
+std::string SemanticNeighbourhoodTranslator::getMainIdtf(ScAddr const & node, ScAddr const & lang) const
 {
-  return context->HelperCheckEdge(TranslationKeynodes::lang_en, node, ScType::EdgeAccessConstPosPerm);
-}
-
-std::string SemanticNeighbourhoodTranslator::getEnglishMainIdtf(ScAddr const & node) const
-{
-  std::string mainIdtf;
-  auto const & iterator = getNrelMainIdtfIterator(node);
-  while (iterator->Next())
-  {
-    mainIdtf = getEnglishContent(iterator->Get(2));
-    if (mainIdtf.empty() == SC_FALSE)
-      break;
-  }
-  return mainIdtf;
+  return utils::CommonUtils::getMainIdtf(context, node, {lang});
 }
 
 bool SemanticNeighbourhoodTranslator::isInIgnoredKeynodes(ScAddr const & node) const

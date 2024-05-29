@@ -16,6 +16,8 @@ public:
 
   ScAddrVector manage(ScAddrVector const & processParameters) const;
 
+  ScAddr createLink(std::string const & text, ScAddrVector const & linkClasses) const;
+
   std::string join(
       std::vector<std::string>::const_iterator const & cbegin,
       std::vector<std::string>::const_iterator const & cend) const;

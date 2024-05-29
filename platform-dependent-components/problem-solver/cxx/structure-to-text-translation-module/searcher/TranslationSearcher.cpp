@@ -14,7 +14,6 @@ TranslationSearcher::TranslationSearcher(ScMemoryContext * context)
 ScAddrSet TranslationSearcher::getStructureEdges(ScAddr const & structure) const
 {
   ScAddrSet edges;
-
   ScIterator3Ptr StructureEdgeAccessIterator = context->Iterator3(structure, ScType::EdgeAccessConstPosPerm, ScType::EdgeAccessConstPosPerm);
   while(StructureEdgeAccessIterator->Next())
   {

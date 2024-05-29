@@ -20,40 +20,25 @@ std::vector<std::string> FromConceptSemanticNeighbourhoodTranslator::getSemantic
   std::vector<std::string> translations;
   auto const & classIterator = context->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, node);
 
-  std::string const & nodeMainIdtf = utils::CommonUtils::getMainIdtf(context, node, {lang});
+  std::string const & nodeMainIdtf = getMainIdtf(node, {lang});
+  if (nodeMainIdtf.empty())
+      return {};
   while (classIterator->Next())
   {
-    if (!isInStructure(classIterator->Get(1), structure))
+    if (!notVisitedStructureEdges.count(classIterator->Get(1)))
       continue;
     ScAddr const & classNode = classIterator->Get(0);
     if (isInIgnoredKeynodes(classNode))
       continue;
-    std::string const & classMainIdtf = utils::CommonUtils::getMainIdtf(context, classNode, {lang});
+    std::string const & classMainIdtf = getMainIdtf(classNode, {lang});
     if (classMainIdtf.empty())
       continue;
-    translations.push_back(nodeMainIdtf + " is " + classMainIdtf);
+    if (lang == TranslationKeynodes::lang_en)
+      translations.push_back(nodeMainIdtf + " is " + classMainIdtf);
+    if (lang == TranslationKeynodes::lang_ru)
+      translations.push_back(nodeMainIdtf + " это " + classMainIdtf);
     notVisitedStructureEdges.erase(classIterator->Get(1));
   }
   return translations;
-}
-
-std::list<ScAddrVector> FromConceptSemanticNeighbourhoodTranslator::getSemanticNeighbourhoodTranslationElements(
-    ScAddr const & node,
-    ScAddr const & structure) const
-{
-  std::list<ScAddrVector> answer;
-
-  auto const & classIterator = context->Iterator3(ScType::NodeConstClass, ScType::EdgeAccessConstPosPerm, node);
-  while (classIterator->Next())
-  {
-    if (isInStructure(classIterator->Get(1), structure) == SC_FALSE)
-      continue;
-    ScAddr const & classNode = classIterator->Get(0);
-    if (isInIgnoredKeynodes(classNode))
-      continue;
-    answer.push_back({classIterator->Get(0), classIterator->Get(1)});
-  }
-
-  return answer;
 }
 }  // namespace translationModule

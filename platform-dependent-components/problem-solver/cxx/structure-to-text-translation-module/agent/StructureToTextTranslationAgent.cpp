@@ -10,26 +10,22 @@ namespace translationModule
 SC_AGENT_IMPLEMENTATION(StructureToTextTranslationAgent)
 {
   ScAddr actionAddr = otherAddr;
-
   if (!checkActionClass(actionAddr))
     return SC_RESULT_OK;
 
   SC_LOG_DEBUG("StructureToTextTranslationAgent started");
-
   ScAddrVector answerVector;
   initFields();
 
   ScAddr const & structureAddr =
       utils::IteratorUtils::getAnyByOutRelation(&m_memoryCtx, actionAddr, scAgentsCommon::CoreKeynodes::rrel_1);
-
   ScAddr const & keyElementsSetAddr =
       utils::IteratorUtils::getAnyByOutRelation(&m_memoryCtx, actionAddr, scAgentsCommon::CoreKeynodes::rrel_2);
   if (!m_memoryCtx.IsElement(structureAddr))
   {
     utils::AgentUtils::finishAgentWork(&m_memoryCtx, actionAddr, false);
     SC_LOG_DEBUG(
-        "StructureToTextTranslationAgent: structureAddr node is not found "
-        "\nStructureToTextTranslationAgent finished with errors");
+        "StructureToTextTranslationAgent: structureAddr node is not found ");
     return SC_RESULT_ERROR;
   }
   try
@@ -42,14 +38,12 @@ SC_AGENT_IMPLEMENTATION(StructureToTextTranslationAgent)
     SC_LOG_DEBUG(ex.Message() << "\nStructureToTextTranslationAgent finished with errors");
     return SC_RESULT_ERROR;
   }
-
   if (answerVector.empty())
   {
     utils::AgentUtils::finishAgentWork(&m_memoryCtx, actionAddr, false);
-    SC_LOG_DEBUG("StructureToTextTranslationAgent: empty structure was generated");
+    SC_LOG_DEBUG("StructureToTextTranslationAgent: empty answer was generated");
     return SC_RESULT_ERROR;
   }
-    
   utils::AgentUtils::finishAgentWork(&m_memoryCtx, actionAddr, answerVector, true);
   SC_LOG_DEBUG("StructureToTextTranslationAgent finished");
   return SC_RESULT_OK;

@@ -5,23 +5,21 @@
 namespace translationModule
 {
 /**
- * _concept _-> node;;
- *
- * note: translation is generated only if following construction does not exist
- * _parameter_class
- *  _<- parameter;
- *  _-> _concept;;
+ * _source _=> _nrel_relation:: node;;
  */
-class FromConceptSemanticNeighbourhoodTranslator : public SemanticNeighbourhoodTranslator
+class NrelFromNodeSemanticNeighbourhoodTranslator : public SemanticNeighbourhoodTranslator
 {
 public:
-  explicit FromConceptSemanticNeighbourhoodTranslator(ScMemoryContext * context);
+  explicit NrelFromNodeSemanticNeighbourhoodTranslator(ScMemoryContext * context);
 
   std::vector<std::string> getSemanticNeighbourhoodTranslation(
       ScAddrQueue & structureSearchQueue,
       ScAddrSet & notVisitedStructureEdges,
       ScAddr const & structure, 
       ScAddr const & lang) const override;
+
+
+private:
 };
 
 }  // namespace translationModule

@@ -94,6 +94,8 @@ ScAddrVector OrientedSetUtils::getElementsFromOrientedSet(ScMemoryContext * cont
           nextEdge = item["NEXT_EDGE"];
           return ScTemplateSearchRequest::STOP;
         });
+    if (curentElement == *(setElements.end()-1))
+      break;
     setElements.push_back(curentElement);
     if (context->HelperCheckEdge(TranslationKeynodes::rrel_last, nextEdge, ScType::EdgeAccessConstPosPerm))
       break;

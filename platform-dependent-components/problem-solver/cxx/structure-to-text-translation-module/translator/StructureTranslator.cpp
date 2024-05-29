@@ -2,9 +2,8 @@
 
 #include "NrelInNodeSemanticNeighbourhoodTranslator.hpp"
 #include "NrelInLinkSemanticNeighbourhoodTranslator.hpp"
-#include "NrelInQuasybinaryLinkSemanticNeighbourhoodTranslator.hpp"
 #include "NrelInQuasybinaryNodeSemanticNeighbourhoodTranslator.hpp"
-#include "NrelFromQuasybinaryNodeSemanticNeighbourhoodTranslator.hpp"
+#include "FromQuasybinaryNodeSemanticNeighbourhoodTranslator.hpp"
 #include "FromConceptSemanticNeighbourhoodTranslator.hpp"
 #include "NrelFromNodeSemanticNeighbourhoodTranslator.hpp"
 
@@ -13,13 +12,14 @@ namespace translationModule
 StructureTranslator::StructureTranslator(ScMemoryContext * context)
   : handlers({
       new FromConceptSemanticNeighbourhoodTranslator(context),
-      // TOADD new InConceptSemanticNeighbourhoodTranslator(context),
-      // new NrelInLinkSemanticNeighbourhoodTranslator(context),
-      // new NrelInQuasybinaryLinkSemanticNeighbourhoodTranslator(context),
-      // new NrelInQuasybinaryNodeSemanticNeighbourhoodTranslator(context),
-      // new NrelFromQuasybinaryNodeSemanticNeighbourhoodTranslator(context),
-      // new NrelFromNodeSemanticNeighbourhoodTranslator(context),
+      // new FromSctructureSemanticNeighbourhoodTranslator(context),
+      new FromQuasybinaryNodeSemanticNeighbourhoodTranslator(context),
+      // new CommonAccessSemanticNeighbourhoodTranslator(context),
+      // new ReverseCommonAccessSemanticNeighbourhoodTranslator(context),
+      new NrelInQuasybinaryNodeSemanticNeighbourhoodTranslator(context),
+      new NrelInLinkSemanticNeighbourhoodTranslator(context),
       new NrelInNodeSemanticNeighbourhoodTranslator(context),
+      new NrelFromNodeSemanticNeighbourhoodTranslator(context)
   })
 {
   this->translationSearcher = std::make_unique<TranslationSearcher>(context);
@@ -38,17 +38,20 @@ std::vector<std::string> StructureTranslator::TranslateStructure(
 {
   ScAddrSet notVisitedStructureEdges = translationSearcher->getStructureEdges(structure);
   ScAddrSet notVisitedStructureNodes = translationSearcher->getStructureNodes(structure);
-  SC_LOG_DEBUG("All edges - " << notVisitedStructureEdges.size());
-  SC_LOG_DEBUG("All nodes - " << notVisitedStructureNodes.size());
-
   ScAddrQueue structureSearchQueue;
-
   for (auto keyAddr : keyElements)
     structureSearchQueue.push(keyAddr);
 
   std::vector<std::string> answer;
-  while (!notVisitedStructureEdges.empty() && !structureSearchQueue.empty())
+  while (!notVisitedStructureEdges.empty())
   {
+    if (structureSearchQueue.empty())
+    {
+      if (!notVisitedStructureNodes.empty())
+        structureSearchQueue.push(*notVisitedStructureNodes.begin());
+      else
+        break;
+    }
     if (!notVisitedStructureNodes.count(structureSearchQueue.front()))
     {
       structureSearchQueue.pop();
